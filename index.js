@@ -10,6 +10,7 @@
  * @param {Function} action: The Function to be applied to each value in the 
  * collection
  */
+ 
 function each(collection, action) {
     if(Array.isArray(collection)) {
         for(var i = 0; i < collection.length; i++) {
@@ -65,12 +66,15 @@ module.exports.typeOf = typeOf;
 
 /**
  * first: Designed to return either a string or an array of the elements 
- * in the array starting at the beginning of the array.
+ * in the array starting at the beginning of the array. 
  * 
  * @param {Array}  array: that will return the elements depending on the number
  * @param {number}  number: that determines the length of the array to return 
  * 
  * @return {string or array}: the elements from the start of the array amount depends on the number
+ * If the the number argument isn't given or isn't a number then it will return the first 
+ * element in the array. If the number is less than zero or the input array isn't an array it
+ * will return an array literal.
  */
  
  function first(array, number) {
@@ -97,9 +101,12 @@ module.exports.first = first;
  * 
  * @param {Array}  array: that will return the elements depending on the number
  * @param {number} number: that determines the length of the array to return.
- * If number is not a number or is left off then return the first param
+ * If number is not a number or is left off then return the last param
  * 
  * @return {string or array}: the elements from the end of the array amount depends on the number.
+ * If the number argument isn't given or isn't a number then it will return the last element in 
+ * the array. If the array isn't an array or if the number is negative then it will return an 
+ * array literal.
  */
  
  function last(array, number) {
@@ -159,33 +166,6 @@ module.exports.indexOf = indexOf;
  module.exports.contains = contains;
  
  
- 
- /**
-  * each: Designed to loop over a collection and pass a function to each element.
-  * 
-  * @param {Object or Array} collection: an object or array 
-  * @param {Function} func: run a function on the element of the collection
-  * 
-  * @return {Object or Array} returns the object or array with the function 
-  * passed into each element
-  */
-  
-  function each(collection, func) {
-     if(typeOf(collection) === 'array') {
-        for (let i = 0; i < collection.length; i++) {
-            func(collection[i], i, collection);
-        }
-     }
-     if(typeOf(collection) === 'object') {
-         for (let key in collection) {
-             func(collection[key], key, collection);
-         }
-     }
- }
- module.exports.each = each;
- 
- 
- 
  /**
   * unique: Designed to loop over an array if the and check if a value is 
   * equal to another value if it is not then add it to a new array that will
@@ -210,11 +190,12 @@ module.exports.unique = unique;
 
 
 /**
- * filter: Designed to use a function argument on an array and return
- * all values that pass the test in a new array.
+ * filter: Designed to use a function argument on an array. The function takes in
+ * the element, index and array. It will then return all that pass the test in a new array.
  * 
  * @param {Array} array: an array to loop through 
- * @param {Function} func: function to test the array against
+ * @param {Function} func: function that takes an element, index and array and runs a test
+ * to get the tests that pass
  * 
  * @return {Array} an array that has passed all the tests from the function.
  */
@@ -230,18 +211,51 @@ function filter(array, func) {
 }
 module.exports.filter = filter;
 
+/**
+ * reject: Designed to use a function argument on an array. The function takes in
+ * the element, index and array. It will then return all that fail the test in a new array.
+ * 
+ * @param {Array} array: an array to loop through
+ * @param {Function} func: function that takes an element, index, or array and runs a test
+ * 
+ * @return {Array} an array of element, indexes or arrays that have failed the function test.
+ */
+
+function reject(array, func) {
+    return filter(array, function(element, i, array) {
+        if (!func(element, i, array)) {
+            return element;
+        }
+    });
+}
+module.exports.reject = reject;
+
+let arr = [1,2,3,4,5];
+function isEven(num) {
+    if (num % 2 === 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+let rejectArr = reject(arr, isEven);
+console.log(rejectArr);
 
 
 /**
  * partition: Designed to take an array and a function to test against the array and return 
- * an array containing two arrays. One with the tests that passes and the second one containing 
- * the tests that fail
+ * an array containing two arrays. The first array holds all the elements of the array arguement
+ * that have passed the function test. The second holds all the elements that didn't pass the 
+ * function call
  * 
  * @param {Array} array: an array to loop through
- * @param {Function} func: a test to run on the array
+ * @param {Function} func: a test to run on the array. It takes in the arguments of the element, index
+ * and the array.
  * 
- * @return {Array} an array containing two other arrays, the first is all tests that pass the 
- * second is all tests that fail.
+ * @return {Array} an array containing two other arrays, The first array holds all the elements of 
+ * the array arguement that have passed the function test. The second holds all the elements that didn't pass
+ * the function call
  */
  
 function partition(array, func) {
@@ -260,13 +274,14 @@ module.exports.partition = partition;
 
 
 /**
- * map: Designed to take either an Array or an Object and run a test on the collection, returning a new array
- * with the passed tests
+ * map: Designed to take either an Array or an Object and passes a function on the element, index and array
+ * if the collection is an array and the value, key and the entire object if it is an object.
  * 
  * @param {Array or Object} collection: either an array or object to loop through
  * @param {Function} func: a test to run on each element in the collection
  * 
- * @return {Array}: returns a new Array containing all the passed tests
+ * @return {Array}: returns the collection with the function passed over each element. The return array will
+ * always be the same length as the array argument. 
  */
  
  function map(collection, func) {
@@ -287,8 +302,8 @@ module.exports.partition = partition;
  
  
  /**
-  * pluck: Designed to take an property from an object in an array 
-  * and return all the property values that match the property in an array.
+  * pluck: Takes an array of objects, and a string. Pluck will loop over the array finding all
+  * associated values to the prop arguement, returning an array with all the values 
   * 
   * @param {Array} array: Must contain an array of elements, will loop through the array
   * @param {Object key} prop: A key element in an object. Will find all instances of the
@@ -314,7 +329,8 @@ module.exports.pluck = pluck;
  * @param {Function} func: a test to run on each element in the collection.
  * 
  * @return {boolean}: a true or false value depending on if every test passed, if one test fails
- * return false. Also able to handle if a function isn't declared.
+ * return false. If a function isn't supplied or doesn’t return a boolean vlaue then it will
+ * check to see if all values are truthy, if one is falsly then it will return false.
  */
  
  
