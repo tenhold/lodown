@@ -1,6 +1,6 @@
 {
   "name": "lodown-tenhold",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "my lodown library",
   "main": "index.js",
   "directories": {

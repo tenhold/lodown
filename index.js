@@ -278,7 +278,7 @@ module.exports.partition = partition;
  * if the collection is an array and the value, key and the entire object if it is an object.
  * 
  * @param {Array or Object} collection: either an array or object to loop through
- * @param {Function} func: a test to run on each element in the collection
+ * @param {Function} func: manipulates each value in the collection returning the namipulated values.
  * 
  * @return {Array}: returns the collection with the function passed over each element. The return array will
  * always be the same length as the array argument. 
@@ -306,7 +306,7 @@ module.exports.partition = partition;
   * associated values to the prop arguement, returning an array with all the values 
   * 
   * @param {Array} array: Must contain an array of elements, will loop through the array
-  * @param {Object key} prop: A key element in an object. Will find all instances of the
+  * @param {String} prop: A key element in an object that must be a string. Will find all instances of the
   * key and return all the key's values in an array
   * 
   * @return {Array}: All the values that match the property argument.
